@@ -41,3 +41,24 @@ router.get('/:id', async(req, res) => {
 // =============================================
 // 3. PUT /api/products/:id - Update a Product
 // =============================================
+
+router.put('/:id', async (req, res) => {
+    try {
+        // Find and update product, return updated product
+        const product = await Product.findByIdAndUpdate(
+            req.params.id,
+            req.body,
+            { new: true, runValidators: true } // (new: true) returns the updated document
+        );
+        // if product not found, return 404
+        if(!product) {
+            return res.status(404).json({ message: "Product not found" })
+        }
+
+        // Return updated product
+        res.json(product);
+    } catch (error) {
+        // Handle validation or other errors
+        res.status(400).json({ message: "Failed to update product", error: error.message });
+    }
+});
