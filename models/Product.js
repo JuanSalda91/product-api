@@ -32,3 +32,8 @@ const productSchema = new mongoose.Schema({
         default: Date.now
     }
 });
+
+// Compile schema into a model
+const Product = mongoose.model("Product", productSchema);
+
+module.exports = Product;
