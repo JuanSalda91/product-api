@@ -62,3 +62,22 @@ router.put('/:id', async (req, res) => {
         res.status(400).json({ message: "Failed to update product", error: error.message });
     }
 });
+
+// ================================================
+// 4. DELETE /api/products/:id - Delete a Product
+// ================================================
+router.delete('/:id', async (req, res) => {
+    try {
+        // Find and delete product
+        const product = await Product.findByIdAndDelete(req.params.id);
+        // if product not found, return 404
+        if(!product) {
+            return res.status(404).json({ message: "Product not found" });
+        }
+        // Return success message
+        res.json({ message: "Product deleted successfully", deletedProduct: product });
+    } catch (error) {
+        //Handle errors
+        res.status(400).json({  message: "Failed to delete product", error: error.message});
+    }
+});
