@@ -3,28 +3,28 @@ const mongoose = require('mongoose');
 // Define the Product schema
 const productSchema = new mongoose.Schema({
     name: {
-        type: string,
+        type: String,
         required: [true, "Product name is required!"]
     },
     description: {
-        type: string,
+        type: String,
         required: [true, "product description is required!"]
     },
     price: {
-        type: number,
+        type: Number,
         required: [true, "Product price is required"],
         min: [0, "Price must be grater than 0"]
     },
     category: {
-        type: string,
+        type: String,
         required: [true, "Product category is required!"]
     },
     isStock: {
-        type: boolean,
+        type: Boolean,
         default: true
     },
     tags: {
-        type: [string],
+        type: [String],
         default: []
     },
     createdAt: {
