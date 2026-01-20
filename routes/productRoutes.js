@@ -81,3 +81,63 @@ router.delete('/:id', async (req, res) => {
         res.status(400).json({  message: "Failed to delete product", error: error.message});
     }
 });
+ 
+// ===============================================
+// 5. GET /api/products - Read all products
+// ===============================================
+router.get('/', async (req, res) => {
+    try {
+        // Extract query parameters
+        const { category, minPrice, maxprice, sortBy, page = 1, limit = 10 } = req.query;
+
+        // Build filter object
+        const filter = {};
+
+        // Add category filter if provided
+        if(category) {
+            filter.categor = category;
+        }
+
+        // Add price range filters if provided
+        if (minPrice || maxPrice) {
+            filter.price = {};
+            if(minPrice) filter.price.$gte = Number(minPrice); //$gte means greater than equal
+            if(maxprice) filter.price.$lte = Number(maxPrice); // $lte means less than equal
+        }
+
+        // Build sort object
+        let sort = {};
+        if (sortBy) {
+            if (sortBy === 'price_asc') { // price_asc means price ascending
+                sort.price = 1; // Ascending
+            } else if (sortBy === 'price_desc') { // price_desc means price descending
+                sort.price = -1; // Descending
+            }
+        }
+
+        // Calculate pagination
+        const skip = (page - 1) * limit;
+
+        // Execute query with filters, sorting, and pagination
+        const products = await Product.find(filter).sort(sort).limit(Number(limit)).skip(skip);
+
+        // get total count for pagination info
+        const total = await Product.countDocuments(filter);
+
+        //  Return product with pagination metadata
+        res.json({
+            products,
+            pagination: {
+                currentPage: Number(page),
+                totalPages: Math.ceil(total / limit),
+                totalProducts: total,
+                productsPerPage: Number(limit)
+            }
+        });
+    } catch (error) {
+        // Handle errors
+        res.status(400).json({ message: "Failed to retrieve products", error: error.message });
+    }
+});
+
+module.exports = router;
